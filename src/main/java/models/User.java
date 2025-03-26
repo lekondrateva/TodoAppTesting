@@ -1,0 +1,15 @@
+package models;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Builder
+@Getter
+public class User {
+
+    private String login;
+    private String password;
+
+}
