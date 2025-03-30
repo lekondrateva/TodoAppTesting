@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import models.Todo;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import requests.TodosRequest;
+import requests.ValidatedTodosRequest;
 import specifications.request.RequestSpec;
 
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ public class BeforeEachExtension implements BeforeEachCallback {
                             .forEach(i -> {
                                 Todo testTodo = generateTestData(Todo.class);
                                 log.info("Generated Todo: {}", testTodo);
-                                new TodosRequest(RequestSpec.authSpecAsAdmin()).create(testTodo);
+                                new ValidatedTodosRequest(RequestSpec.authSpecAsAdmin()).create(testTodo);
                             });
                 });
     }

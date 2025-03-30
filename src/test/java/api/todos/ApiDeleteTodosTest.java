@@ -2,21 +2,21 @@ package api.todos;
 
 import annotations.PrepareTodo;
 import api.BaseApiTest;
-import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import models.Todo;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import requests.TodosRequest;
 import specifications.request.RequestSpec;
 import specifications.response.ErrorResponse;
 
-import static specifications.request.RequestSpec.authSpecAsAdmin;
-
+@Feature("API DELETE Todos Tests")
 public class ApiDeleteTodosTest extends BaseApiTest {
 
     @Test
     @PrepareTodo(1)
-    @Description("Авторизированный юзер может удалить todo")
-    public void testDeleteExistingTodoWithValidAuth() {
+    @DisplayName("TC-11 Authorized user deletes a Todo")
+    public void testDeleteExistingTodoWithAuth() {
         Todo createdTodo = todosRequester.getValidatedRequest().readAll().get(0);
 
         todosRequester.getValidatedRequest().delete(createdTodo.getId());
@@ -26,23 +26,23 @@ public class ApiDeleteTodosTest extends BaseApiTest {
 
     @Test
     @PrepareTodo(1)
-    @Description("Неавторизированный юзер не может удалить todo")
+    @DisplayName("TC-12 Unauthorized user cannot delete a Todo")
     public void testDeleteTodoWithoutAuthHeader() {
-        Todo createdTodo = todosRequester.getValidatedRequest().readAll().get(0);
+        Todo existingTodo = todosRequester.getValidatedRequest().readAll().get(0);
 
-        new TodosRequest(RequestSpec.unauthSpec()).delete(createdTodo.getId())
+        new TodosRequest(RequestSpec.unauthSpec()).delete(existingTodo.getId())
                 .then().assertThat().spec(ErrorResponse.userIsUnauthorized());
 
-        softly.assertThat(todosRequester.getValidatedRequest().readAll()).contains(createdTodo);
+        softly.assertThat(todosRequester.getValidatedRequest().readAll()).contains(existingTodo);
     }
 
     @Test
-    @Description("Авторизованный юзер не может удалить задачу с несуществующим id")
+    @DisplayName("TC-13 Deleting a non-existent Todo returns an error")
     public void testDeleteNonExistentTodo() {
-        long nonExistingId = 0L;
+        long nonExistentId = 0L;
 
-        new TodosRequest(authSpecAsAdmin()).delete(nonExistingId)
-                .then().assertThat().spec(ErrorResponse.invalidRequestParameters());
+        todosRequester.getTodosRequest().delete(nonExistentId)
+                .then().assertThat().spec(ErrorResponse.notFound());
     }
 
 }

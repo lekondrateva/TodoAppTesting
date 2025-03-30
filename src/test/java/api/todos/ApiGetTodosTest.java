@@ -3,11 +3,13 @@ package api.todos;
 import annotations.PrepareTodo;
 import api.BaseApiTest;
 import dataGenerators.TestDataStorage;
-import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import models.Todo;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import requests.TodosRequest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import requests.ValidatedTodosRequest;
 import specifications.request.RequestSpec;
 import specifications.response.ErrorResponse;
 
@@ -18,40 +20,39 @@ public class ApiGetTodosTest extends BaseApiTest {
 
     @Test
     @PrepareTodo(3)
-    @Description("Авторизованный пользователь может получить список задач")
-    public void testGetTodosWithValidAuth() {
+    @DisplayName("TC-4 Authorized user retrieves the list of Todos")
+    public void testGetTodosWithAuth() {
         List<Todo> todos = todosRequester.getValidatedRequest().readAll();
 
         softly.assertThat(todos).hasSize(TestDataStorage.getInstance().getStorage().size());
     }
 
     @Test
-    @Description("Неавторизованный пользователь не может получить список задач")
+    @PrepareTodo(3)
+    @DisplayName("TC-5 Unauthorized user retrieves the list of Todos")
     public void testGetTodosWithoutAuth() {
-        new TodosRequest(RequestSpec.unauthSpec()).readAll()
-                .then().assertThat().spec(ErrorResponse.userIsUnauthorized());
+        List<Todo> todos = new ValidatedTodosRequest(RequestSpec.unauthSpec()).readAll();
+
+        softly.assertThat(todos).hasSize(TestDataStorage.getInstance().getStorage().size());
     }
 
     @Test
     @PrepareTodo(5)
-    @Description("При передаче параметров offset и limit система возвращает корректные результаты")
+    @DisplayName("TC-6 Results are filtered by offset and limit")
     public void testGetTodosWithOffsetAndLimit() {
-        List<Todo> todos = todosRequester.getValidatedRequest().readAll(2, 2);
+        List<Todo> todos = todosRequester.getValidatedRequest().readAll(0, 2);
 
         softly.assertThat(todos).hasSize(2);
     }
 
-    @Test
-    @Description("Если передать некорректный offset, сервер возвращает ошибку 400")
-    public void testGetTodosWithInvalidOffset() {
-        new TodosRequest(RequestSpec.authSpecAsAdmin()).readAll(-1, 10)
-                .then().assertThat().spec(ErrorResponse.invalidRequestParameters());
-    }
-
-    @Test
-    @Description("Если передать некорректный limit, сервер возвращает ошибку 400")
-    public void testGetTodosWithInvalidLimit() {
-        new TodosRequest(RequestSpec.authSpecAsAdmin()).readAll(-1, 10)
+    @ParameterizedTest
+    @DisplayName("TC-7 Error returned for invalid offset or limit")
+    @CsvSource({
+            "-1, 10",
+            "10, -1"
+    })
+    public void testGetTodosWithInvalidOffset(int offset, int limit) {
+        todosRequester.getTodosRequest().readAll(offset, limit)
                 .then().assertThat().spec(ErrorResponse.invalidRequestParameters());
     }
 

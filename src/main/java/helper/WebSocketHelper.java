@@ -8,6 +8,7 @@ import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 
 public class WebSocketHelper {
+
     private WebSocketClient client;
     private final CountDownLatch messageLatch = new CountDownLatch(1);
     private String receivedMessage;
@@ -45,4 +46,5 @@ public class WebSocketHelper {
     public void close() throws InterruptedException {
         client.closeBlocking();
     }
+
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 @Getter
 public class TestDataStorage {
+
     private static TestDataStorage instance;
     private HashMap<Long, Todo> storage;
 
@@ -25,11 +26,8 @@ public class TestDataStorage {
         storage.put(todo.getId(), todo);
     }
 
-    public HashMap<Long, Todo> getStorage() {
-        return storage;
-    }
-
     public void clean() {
         storage = new HashMap<>();
     }
+
 }

@@ -6,11 +6,11 @@ import lombok.Getter;
 @Getter
 public class TodosRequester {
 
-    private TodosRequest request;
+    private TodosRequest todosRequest;
     private ValidatedTodosRequest validatedRequest;
 
     public TodosRequester(RequestSpecification requestSpecification) {
-        this.request = new TodosRequest(requestSpecification);
+        this.todosRequest = new TodosRequest(requestSpecification);
         this.validatedRequest = new ValidatedTodosRequest(requestSpecification);
     }
 
