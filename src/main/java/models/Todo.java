@@ -8,6 +8,7 @@ import lombok.*;
 @Getter
 @Builder(toBuilder = true)
 @EqualsAndHashCode
+@ToString
 public class Todo {
 
     private Long id;

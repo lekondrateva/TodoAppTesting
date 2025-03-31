@@ -3,6 +3,7 @@ package api;
 import annotations.BeforeEachExtension;
 import configuration.Configuration;
 import dataGenerators.TestDataStorage;
+import io.qameta.allure.junit5.AllureJunit5;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import specifications.request.RequestSpec;
 
 @Slf4j
 @ExtendWith(BeforeEachExtension.class)
+@ExtendWith(AllureJunit5.class)
 public class BaseApiTest {
 
     protected TodosRequester todosRequester;
